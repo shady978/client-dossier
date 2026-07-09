@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دراسة العملاء المعمّقة — دوسيه المبيعات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2420;--ink-soft:#26332d;--paper:#f4f3ee;--card:#ffffff;
+    --copper:#b0602e;--copper-d:#8f4c22;--steel:#2f5559;--ochre:#c98a2e;
+    --muted:#5c645f;--line:#dcd9d0;--line-2:#e8e6dd;--danger:#a63a2c;--ok:#2f6b4f;--maxw:940px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-weight:400;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased}
+  .num,.mono{font-family:"IBM Plex Mono",monospace;font-feature-settings:"tnum";direction:ltr;unicode-bidi:isolate}
+  .ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+  h1,h2,h3,h4{font-family:"IBM Plex Sans Arabic",sans-serif;line-height:1.4;font-weight:700;letter-spacing:-.01em;margin:0}
+  a{color:var(--copper-d);text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--copper);direction:ltr;unicode-bidi:isolate}
+
+  /* cover */
+  .cover{background:var(--ink);color:#eef0ea;position:relative;overflow:hidden}
+  .cover .wrap{padding:58px 24px 46px;position:relative;z-index:2}
+  .cover-strata{position:absolute;inset:0;z-index:1;opacity:.13;display:flex;flex-direction:column;justify-content:flex-end}
+  .cover-strata span{display:block}
+  .cover-strata span:nth-child(1){height:20%;background:#2b3a33}
+  .cover-strata span:nth-child(2){height:13%;background:var(--steel)}
+  .cover-strata span:nth-child(3){height:9%;background:var(--copper)}
+  .cover-strata span:nth-child(4){height:6%;background:var(--ochre)}
+  .cover .eyebrow{color:var(--ochre)}
+  .cover h1{font-size:clamp(26px,5vw,42px);color:#fff;margin:16px 0 12px;line-height:1.3}
+  .cover p{color:#c7cec7;max-width:640px;font-size:16px;margin:0}
+  .cover-meta{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px;color:#9fb0a6}
+  .cover-meta b{color:#e6ebe4;font-weight:600}
+
+  /* legend / method */
+  .method{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:-30px auto 0;position:relative;z-index:3;box-shadow:0 12px 40px -26px rgba(20,30,25,.4)}
+  .method h4{font-size:14px;color:var(--muted);font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;direction:ltr;text-align:right}
+  .method p{margin:0 0 12px;font-size:14.5px;color:var(--ink-soft)}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted)}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+  .dot.w{background:var(--danger)}.dot.m{background:var(--ochre)}.dot.g{background:var(--ok)}
+
+  /* index */
+  .index{margin:40px 0 8px}
+  .index h4{font-size:13px;color:var(--muted);font-family:"IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;direction:ltr;text-align:right}
+  .index ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}
+  .index li{display:flex;gap:10px;align-items:baseline;font-size:14.5px;border-bottom:1px dashed var(--line-2);padding-bottom:7px}
+  .index .n{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--copper)}
+  .index a{color:var(--ink)}
+  .index .pri{margin-inline-start:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:1px 7px;border-radius:20px}
+  .pri.a{background:#e7f0e9;color:var(--ok)}.pri.b{background:#f3ecdf;color:var(--copper-d)}
+  @media(max-width:640px){.index ol{grid-template-columns:1fr}}
+
+  /* client card */
+  .client{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0;margin:26px 0;overflow:hidden;scroll-margin-top:16px}
+  .c-head{background:var(--ink);color:#eef0ea;padding:20px 26px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .c-head .rank{font-family:"IBM Plex Mono",monospace;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .c-head h2{color:#fff;font-size:21px;flex:1;min-width:180px}
+  .c-head .site{font-family:"IBM Plex Mono",monospace;font-size:12px;color:#9fb0a6;direction:ltr;unicode-bidi:isolate}
+  .c-tags{display:flex;gap:6px;flex-wrap:wrap;width:100%;margin-top:2px}
+  .c-tags .t{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:2px 9px;border-radius:20px;background:rgba(255,255,255,.09);color:#c7cec7;direction:ltr}
+  .c-tags .t.pri{background:var(--copper);color:#fff}
+  .c-body{padding:24px 26px}
+
+  .snap{font-size:15.5px;color:var(--ink-soft);margin:0 0 20px;padding-bottom:20px;border-bottom:1px solid var(--line-2)}
+  .snap b{color:var(--ink)}
+
+  .block{margin:20px 0}
+  .block > .lbl{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;color:var(--copper);text-transform:uppercase;direction:ltr;unicode-bidi:isolate;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .block > .lbl::before{content:"";width:14px;height:2px;background:var(--copper);display:inline-block}
+
+  /* scorecard */
+  .score{display:grid;grid-template-columns:1fr 1fr;gap:8px 22px}
+  .score .row{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink-soft);padding:4px 0;border-bottom:1px dotted var(--line-2)}
+  .score .row .dot{margin-inline-start:auto}
+  .score .row .rt{font-size:11.5px;color:var(--muted);font-family:"IBM Plex Mono",monospace;direction:ltr;min-width:42px;text-align:left}
+  @media(max-width:600px){.score{grid-template-columns:1fr}}
+
+  ul.clean{list-style:none;padding:0;margin:0}
+  ul.clean li{position:relative;padding-inline-start:20px;margin-bottom:9px;font-size:15px}
+  ul.clean li::before{content:"";position:absolute;inset-inline-start:0;top:11px;width:7px;height:7px;background:var(--copper);border-radius:2px;transform:rotate(45deg)}
+  ul.feat li::before{background:var(--steel);border-radius:50%;transform:none;top:10px;width:8px;height:8px}
+
+  /* pain->solution map */
+  .map{border:1px solid var(--line-2);border-radius:10px;overflow:hidden}
+  .map .m-row{display:grid;grid-template-columns:1fr 1fr;font-size:14px}
+  .map .m-row > div{padding:11px 14px;border-bottom:1px solid var(--line-2)}
+  .map .m-row .pain{background:#fbf6f4;color:#7c3b30;border-inline-start:3px solid var(--danger)}
+  .map .m-row .sol{color:var(--ink-soft)}
+  .map .m-head > div{background:var(--ink);color:#dfe6e0;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;border-bottom:none;direction:ltr}
+  .map .m-row:last-child > div{border-bottom:none}
+  @media(max-width:600px){.map .m-row{grid-template-columns:1fr}.map .m-head{display:none}.map .m-row .pain::before{content:"الوجع — "}.map .m-row .sol::before{content:"الحل — ";font-weight:700;color:var(--steel)}}
+
+  .meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+  .meta-grid .mc{background:#faf9f5;border:1px solid var(--line-2);border-radius:10px;padding:13px 15px}
+  .meta-grid .mc .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;direction:ltr;margin-bottom:5px}
+  .meta-grid .mc .v{font-size:14px;color:var(--ink);font-weight:500}
+  .meta-grid .mc .v .ltr{color:var(--steel);font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+  @media(max-width:640px){.meta-grid{grid-template-columns:1fr}}
+
+  .pitch{background:var(--ink-soft);color:#eaf0ea;border-radius:12px;padding:16px 20px;margin-top:18px;font-size:15px;line-height:1.7}
+  .pitch .k{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;color:var(--ochre);text-transform:uppercase;direction:ltr;display:block;margin-bottom:7px}
+  .pitch b{color:#fff}
+
+  .note{background:#fbf7ef;border:1px solid #ece2cd;border-radius:10px;padding:10px 14px;font-size:13px;color:#7a6428;margin-top:14px}
+
+  section.intro{padding:20px 0 0}
+  .toolkit{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;margin:30px 0}
+  .toolkit h3{font-size:19px;margin-bottom:6px}
+  .toolkit p.sub{color:var(--muted);font-size:14.5px;margin:0 0 18px}
+  .tk-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 26px}
+  .tk-grid .tk{font-size:14px;display:flex;gap:9px}
+  .tk-grid .tk b{color:var(--ink)}
+  .tk-grid .tk .i{color:var(--steel);font-family:"IBM Plex Mono",monospace;font-size:12px;flex-shrink:0}
+  @media(max-width:640px){.tk-grid{grid-template-columns:1fr}}
+
+  .close{background:var(--ink);color:#cdd8d0;border-radius:16px;padding:30px 28px;margin:30px 0 46px}
+  .close h3{color:#fff;font-size:20px;margin-bottom:10px}
+  .close p{font-size:15px;margin:0 0 8px}
+  .close b{color:#fff}
+
+  footer{color:var(--muted);font-size:12.5px;padding:0 0 40px;text-align:center;line-height:1.7}
+
+  .reveal{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+  @media print{
+    body{background:#fff;font-size:11.5px}
+    .cover{background:#fff !important;color:#000;border-bottom:2px solid #000}
+    .cover h1{color:#000 !important}.cover-strata,.reveal{opacity:1 !important}
+    .client,.toolkit{break-inside:avoid;border:1px solid #000}
+    .c-head,.close{background:#f0f0f0 !important;color:#000 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .c-head h2,.c-head .rank{color:#000 !important}
+    .pitch{background:#f4f4f4 !important;color:#000}
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="cover-strata" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="wrap">
+    <div class="eyebrow">Client Deep-Dive Dossier · 2026</div>
+    <h1>دراسة العملاء المعمّقة</h1>
+    <p>دوسيه مبيعات لكل مرشّح: أوديت رقمي متعدّد المحاور، نقاط الألم، الفيتشرز المقترحة، ربط كل وجع بحلّه، الباقة والسعر التقديري، وزاوية الـ pitch الجاهزة للتواصل.</p>
+    <div class="cover-meta">
+      <span>عدد المرشّحين: <b>10</b></span>
+      <span>الملحق: <a href="#toolkit" style="color:#e6ebe4;border-bottom:1px solid #6b7a70">صندوق الفيتشرز الموحّد</a></span>
+      <span>مُكمِّل لـ: <b>دراسة الجدوى</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="method reveal">
+    <h4>المنهجية</h4>
+    <p>كل أوديت مبني على المعلومات العامة المتاحة عن الشركة وموقعها + أنماط أفضل الممارسات في المواقع الصناعية B2B. مؤشّرات التقييم استرشادية تُؤكَّد بـ <b>audit مباشر على الموقع الفعلي</b>، وبيانات التواصل تُراجَع قبل الإرسال (الأفضل دائمًا مدخل دافئ).</p>
+    <div class="legend">
+      <span><i class="dot w"></i> ضعيف — يحتاج معالجة</span>
+      <span><i class="dot m"></i> متوسط — قابل للتحسين</span>
+      <span><i class="dot g"></i> جيد — يُبنى عليه</span>
+    </div>
+  </div>
+
+  <div class="index reveal">
+    <h4>فهرس المرشّحين</h4>
+    <ol>
+      <li><span class="n">01</span><a href="#c1">Truco Australia</a><span class="pri a">أ</span></li>
+      <li><span class="n">02</span><a href="#c2">DeepTech Oil Services</a><span class="pri a">أ</span></li>
+      <li><span class="n">03</span><a href="#c3">Delta Inspection (DIPS)</a><span class="pri a">أ</span></li>
+      <li><span class="n">04</span><a href="#c4">DiveMix</a><span class="pri a">أ</span></li>
+      <li><span class="n">05</span><a href="#c5">Oil &amp; Gas Solutions (OGSOL)</a><span class="pri a">أ</span></li>
+      <li><span class="n">06</span><a href="#c6">Stratoil Energy Services</a><span class="pri b">ب</span></li>
+      <li><span class="n">07</span><a href="#c7">Shalateen (SMRC)</a><span class="pri b">ب</span></li>
+      <li><span class="n">08</span><a href="#c8">WadiCo</a><span class="pri b">ب</span></li>
+      <li><span class="n">09</span><a href="#c9">Multimin Egypt</a><span class="pri b">ب</span></li>
+      <li><span class="n">10</span><a href="#c10">OLFELD (Omega)</a><span class="pri b">ب</span></li>
+    </ol>
+  </div>
+</div>
+
+<main class="wrap">
+
+<!-- ========== 01 TRUCO ========== -->
+<article class="client reveal" id="c1">
+  <div class="c-head">
+    <span class="rank">01</span>
+    <h2>Truco Australia</h2>
+    <span class="site ltr">trucorubber.com</span>
+    <div class="c-tags"><span class="t pri">Anchor دولي</span><span class="t">Mining / Oil &amp; Gas</span><span class="t">Australia</span><span class="t">علاقة دافئة</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>مصنّع خراطيم وسيور مطاطية صناعية</b> (hoses &amp; conveyor belts) عمره أكثر من 130 سنة، أصل جنوب أفريقي، معتمد ISO 9001، ويدخل الآن السوق الأسترالي لخدمة التعدين والبترول والإنشاءات والزراعة. أقوى مدخل لديك: علاقتك المباشرة بفريق الـ sales بالداخل.</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">حضور محلي أسترالي <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">الثقة والإثبات المحلي <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">تحويل و RFQ <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">SEO / AEO محلي <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">كتالوج المنتجات <span class="rt">fair</span><i class="dot m"></i></div>
+        <div class="row">الموبايل والسرعة <span class="rt">fair</span><i class="dot m"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: لا يوجد موقع أسترالي مستقل — مجرد landing page على دومين جنوب أفريقيا، برقم هاتف <span class="ltr">+27</span>، بلا عنوان أو فريق محلي، والـ RFQ يدوي بنموذج STAMPED.</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">دخول سوق جديد بلا مصداقية محلية</div><div class="sol">موقع أسترالي مستقل (au.) + رقم وعنوان محلي + صفحة «why local supply / short lead times»</div></div>
+        <div class="m-row"><div class="pain">المشتري الأسترالي لا يثق بـ «مورّد أجنبي»</div><div class="sol">صفحات صناعات محلية (mining/oil&amp;gas/construction) + شهادات ISO + إثبات أداء</div></div>
+        <div class="m-row"><div class="pain">RFQ يدوي وبطيء</div><div class="sol">AI RFQ يستقبل المواصفات، يرشّح المنتج المناسب، ويرد بمهلة التسليم فورًا</div></div>
+        <div class="m-row"><div class="pain">غير مرئي لمشتري التعدين الأسترالي في البحث</div><div class="sol">AEO + SEO لكلمات مثل «mining hose supplier Australia»</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>موقع أسترالي مستقل ثنائي المسار (منتجات + صناعات) بهوية محلية.</li>
+        <li>كتالوج قابل للفلترة بالمقاسات والـ part numbers وتنزيل الـ spec sheets.</li>
+        <li>AI RFQ Assistant مدرّب على كتالوج المنتجات.</li>
+        <li>قسم شهادات وجودة (ISO) + محتوى «short lead times / local stock».</li>
+        <li>case studies (من أفريقيا مبدئيًا ثم أستراليا) + AEO.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">Flagship دولي — Lead Engine</div></div>
+      <div class="mc"><div class="k">السعر التقديري</div><div class="v"><span class="ltr">~$12k–18k</span> + retainer <span class="ltr">~$800/mo</span></div></div>
+      <div class="mc"><div class="k">صاحب القرار</div><div class="v">علاقتك (sales) → المدير التجاري / مدير السوق الأسترالي</div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«لدخول أستراليا محتاجين تبانوا شركة أسترالية — مش صفحة على موقع جنوب أفريقي برقم <b>+27</b>. نبنيلكم الحضور المحلي المستقل + <b>AI يستقبل الـ RFQ ويرد فورًا</b>، فتكسبوا ثقة مشتري التعدين من أول يوم.»</div>
+  </div>
+</article>
+
+<!-- ========== 02 DEEPTECH ========== -->
+<article class="client reveal" id="c2">
+  <div class="c-head">
+    <span class="rank">02</span>
+    <h2>DeepTech Oil Services</h2>
+    <span class="site ltr">deeptechoilservices.com</span>
+    <div class="c-tags"><span class="t pri">مدخل فوري</span><span class="t">Subsea / ROV</span><span class="t">Egypt · MCS Group</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>خدمات ROV وأعمال تحت سطح البحر</b>، جزء من MCS Group العالمية (مكاتب في بريطانيا ومصر والإمارات وقطر وماليزيا)، أسطول أكثر من 30 ROV حتى عمق 3000م، وعقود مع <b>BP</b> (West Nile Delta) و Burullus Gas. المدير الإداري: Ahmed Soliman.</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">التصميم والتقنية <span class="rt">poor</span><i class="dot w"></i></div>
+        <div class="row">إبراز الإنجازات/العقود <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">قسم QHSE <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">SEO / AEO <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">الموبايل والسرعة <span class="rt">poor</span><i class="dot w"></i></div>
+        <div class="row">هوية المجموعة (MCS) <span class="rt">weak</span><i class="dot w"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: الموقع متقادم جدًا ويُشير إلى <span class="ltr">Adobe Flash Player</span> (تقنية توقّفت 2020) — تناقض صارخ مع حجم عقودهم.</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">موقع بدائي يناقض عقودًا مع BP — يضر المصداقية أمام الـ IOCs</div><div class="sol">إعادة بناء كاملة حديثة + timeline للعقود والإنجازات (BP · Burullus)</div></div>
+        <div class="m-row"><div class="pain">الأسطول والقدرات غير معروضة باحتراف</div><div class="sol">قسم fleet تفاعلي: كل ROV بمواصفاته وعمقه ومهامه</div></div>
+        <div class="m-row"><div class="pain">الـ HSE (حاسم في المناقصات) غير بارز</div><div class="sol">قسم QHSE قوي: شهادات، سجل سلامة، إجراءات</div></div>
+        <div class="m-row"><div class="pain">لا يعكس الانتماء لـ MCS Group الدولية</div><div class="sol">ربط بصري بهوية المجموعة + محتوى فني (IRM / asset integrity)</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>موقع حديث سريع + قسم أسطول ROV تفاعلي بالمواصفات.</li>
+        <li>Timeline للعقود والإنجازات (BP · Burullus · مناطق التشغيل عالميًا).</li>
+        <li>قسم QHSE واعتمادات بارز.</li>
+        <li>مساعد AI للأسئلة الفنية عن قدرات الـ ROVs والخدمات.</li>
+        <li>محتوى فني + AEO يستهدف مصطلحات الـ subsea.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">Lead Engine / Growth (بريميم)</div></div>
+      <div class="mc"><div class="k">السعر التقديري</div><div class="v"><span class="ltr">~$4k–8k+</span> + retainer</div></div>
+      <div class="mc"><div class="k">التواصل</div><div class="v"><span class="ltr">+20 2 26713829</span> · <span class="ltr">info@deeptechoilservices.com</span></div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«عندكم عقود مع <b>BP</b> وأسطول 30+ ROV — بس موقعكم لسه بيشاور على <b>Flash</b>. ده تناقض بيضر مصداقيتكم قدام أي IOC في المناقصة الجاية. نبنيلكم موقع يليق بحجمكم ويحوّل عقودكم لأداة بيع.»</div>
+  </div>
+</article>
+
+<!-- ========== 03 DELTA ========== -->
+<article class="client reveal" id="c3">
+  <div class="c-head">
+    <span class="rank">03</span>
+    <h2>Delta Inspection (DIPS)</h2>
+    <span class="site ltr">deltaips.co</span>
+    <div class="c-tags"><span class="t pri">مدخل فوري</span><span class="t">NDT / Inspection</span><span class="t">Egypt</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>فحص لا إتلافي (NDT)، rope access (IRATA)، فحص معدات الرفع، تصوير إشعاعي</b>؛ إيراد ~<span class="ltr">$18.5M</span>، 51–200 موظف، معتمدة ISO 9001/45001/14001 و IRATA و ABS ومرخّصة من ENRRA. تأسست 2014 — مدينة نصر.</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">اكتمال الموقع والمحتوى <span class="rt">poor</span><i class="dot w"></i></div>
+        <div class="row">إبراز الاعتمادات <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">نظام الشهادات أونلاين <span class="rt">fair</span><i class="dot m"></i></div>
+        <div class="row">تحويل / طلب خدمة <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">SEO / AEO <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">ثنائية اللغة <span class="rt">weak</span><i class="dot w"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: الموقع لا يزال يحوي نصّ placeholder «<span class="ltr">Lorem ipsum</span>» — غير مكتمل ومُحرِج لشركة بإيراد <span class="ltr">$18.5M</span>. مدخل ذهبي.</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">موقع بنصّ وهمي يضر ثقة شركة كبيرة</div><div class="sol">موقع احترافي مكتمل بمحتوى حقيقي مهيكل</div></div>
+        <div class="m-row"><div class="pain">الاعتمادات (ورقة البيع الأساسية) غير مستغلة</div><div class="sol">«جدار اعتمادات» بارز (IRATA · ISO · ABS · ENRRA)</div></div>
+        <div class="m-row"><div class="pain">لا قناة سهلة لطلب الخدمة</div><div class="sol">نظام طلب فحص / حجز + توجيه للـ CRM</div></div>
+        <div class="m-row"><div class="pain">نظام الشهادات غير مبرز</div><div class="sol">دمج نظام عرض/طباعة الشهادات أونلاين بوضوح</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>موقع احترافي مكتمل ثنائي اللغة.</li>
+        <li>قسم اعتمادات وشهادات بارز كأداة بيع.</li>
+        <li>صفحات خدمات مفصّلة (Rope Access · NDT methods · Radiography · Lifting).</li>
+        <li>بوابة عرض/طباعة الشهادات للعملاء + نظام طلب خدمة.</li>
+        <li>case studies + AEO لمصطلحات الفحص.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">Lead Engine (مصري بريميم)</div></div>
+      <div class="mc"><div class="k">السعر التقديري</div><div class="v"><span class="ltr">~$3.5k</span> + retainer</div></div>
+      <div class="mc"><div class="k">صاحب القرار / التواصل</div><div class="v">الإدارة (Khaled Khaled) · <span class="ltr">+20 100 496 8478</span></div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«موقعكم لسه فيه نصّ <b>Lorem ipsum</b> — وشركة NDT بإيراد <b>$18.5M</b> بمستوى اعتماداتكم (IRATA/ISO/ABS) مايصحّش تبان كده. نبنيلكم موقع يحوّل اعتماداتكم لأداة بيع، ونظام شهادات أونلاين لعملائكم.»</div>
+  </div>
+</article>
+
+<!-- ========== 04 DIVEMIX ========== -->
+<article class="client reveal" id="c4">
+  <div class="c-head">
+    <span class="rank">04</span>
+    <h2>DiveMix</h2>
+    <span class="site ltr">divemix.com</span>
+    <div class="c-tags"><span class="t">Gas &amp; Compressors</span><span class="t">Egypt · ألماني-مصري</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>تكنولوجيا الغاز والكمبروسورات</b>: كمبروسورات هواء/صناعية حتى 420bar، مولّدات N2/O2 (PSA)، وحدات تحكّم آبار ووحدات اختبار. شركة ألمانية-مصرية منذ 2004، وكيل حصري لماركات «made in Germany»، فرعان (القاهرة + الغردقة)، تخدم البترول والطبي والبحري والأغذية والغوص.</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">كتالوج المنتجات <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">إبراز الجودة الألمانية <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">مسارات القطاعات <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">تحويل / RFQ <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">SEO / AEO <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">الموبايل والسرعة <span class="rt">fair</span><i class="dot m"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: أقوى ورقة لديهم — الوكالة الحصرية والجودة الألمانية — غير مستغلة على الموقع، والمنتجات الفنية المتنوّعة صعبة التصفّح.</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">«made in Germany» غير مستغلة كميزة</div><div class="sol">هوية ومحتوى يُبرزان الجودة الألمانية والوكالات الحصرية</div></div>
+        <div class="m-row"><div class="pain">منتجات متنوّعة صعبة التصفّح</div><div class="sol">كتالوج قابل للفلترة حسب النوع + تنزيل spec sheets</div></div>
+        <div class="m-row"><div class="pain">عملاء متعدّدو القطاعات بمسار واحد</div><div class="sol">مسارات صناعات (Oil&amp;Gas · Medical · Marine · Diving)</div></div>
+        <div class="m-row"><div class="pain">RFQ يدوي</div><div class="sol">AI RFQ يرشّح المنتج ويجمّع المواصفات</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>كتالوج منتجات مفلتر + datasheets.</li>
+        <li>صفحات مسارات صناعات مستقلة.</li>
+        <li>قسم الوكالات والماركات الألمانية.</li>
+        <li>AI RFQ Assistant.</li>
+        <li>SEO/AEO تقني ثنائي اللغة.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">Lead Engine (مصري)</div></div>
+      <div class="mc"><div class="k">السعر التقديري</div><div class="v"><span class="ltr">~$3k</span> + retainer</div></div>
+      <div class="mc"><div class="k">التواصل</div><div class="v"><span class="ltr">+20 2 2417278</span> (القاهرة)</div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«أقوى ورقة عندكم — الوكالة الحصرية والجودة الألمانية — مش ظاهرة على موقعكم. نبنيلكم موقع يبيع بيها، بكتالوج منظّم و<b>AI يستقبل طلبات التسعير</b> ويرشّح المنتج المناسب لكل قطاع.»</div>
+  </div>
+</article>
+
+<!-- ========== 05 OGSOL ========== -->
+<article class="client reveal" id="c5">
+  <div class="c-head">
+    <span class="rank">05</span>
+    <h2>Oil &amp; Gas Solutions (OGSOL)</h2>
+    <span class="site ltr">ogsol.com</span>
+    <div class="c-tags"><span class="t">Equipment Supply</span><span class="t">Egypt · MENA</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>تصنيع وتوريد معدات ومواد</b> لعمليات upstream و midstream و downstream في مصر والمنطقة، بفريق مبيعات فني وخبرة قطاعية.</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">كتالوج / عرض المنتجات <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">RFQ / التقاط leads <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">المحتوى الفني <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">SEO / AEO <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">إشارات الثقة/الشهادات <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">التصميم العام <span class="rt">fair</span><i class="dot m"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: موقع تعريفي بسيط لا يعرض كتالوجًا قويًا ولا يستقبل RFQ ولا يقدّم محتوى فنيًا يجذب المشتري التقني.</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">المشتري التقني لا يجد كتالوجًا أو مواصفات</div><div class="sol">كتالوج قابل للفلترة + datasheets حسب upstream/mid/down</div></div>
+        <div class="m-row"><div class="pain">لا قناة RFQ احترافية</div><div class="sol">نظام RFQ ذكي موجّه للـ CRM</div></div>
+        <div class="m-row"><div class="pain">غير ظاهر في البحث</div><div class="sol">SEO/AEO تقني + محتوى للكلمات الصناعية</div></div>
+        <div class="m-row"><div class="pain">إشارات الثقة ضعيفة</div><div class="sol">قسم شهادات جودة + عملاء + مشاريع</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>كتالوج منتجات مفلتر + datasheets.</li>
+        <li>RFQ ذكي + تكامل CRM.</li>
+        <li>صفحات upstream / midstream / downstream.</li>
+        <li>قسم شهادات ومشاريع.</li>
+        <li>محتوى فني + AEO.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">Lead Engine (مصري)</div></div>
+      <div class="mc"><div class="k">السعر التقديري</div><div class="v"><span class="ltr">~$3k–3.5k</span> + retainer</div></div>
+      <div class="mc"><div class="k">التواصل</div><div class="v"><span class="ltr">ogsol.com</span> (صفحة التواصل / LinkedIn)</div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«المشتري في البترول بيقرّر من الموقع قبل ما يكلّمكم بـ 70%. موقعكم دلوقت مش بيعرض كتالوج ولا بيستقبل RFQ — بنحوّله من كارت تعريف لـ <b>بائع فني 24/7</b> بيجيب استفسارات مؤهّلة.»</div>
+  </div>
+</article>
+
+<!-- ========== 06 STRATOIL ========== -->
+<article class="client reveal" id="c6">
+  <div class="c-head">
+    <span class="rank">06</span>
+    <h2>Stratoil Energy Services</h2>
+    <span class="site ltr">stratoil.co.uk</span>
+    <div class="c-tags"><span class="t">Training / Consulting</span><span class="t">Egypt · MENA · Africa</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>تدريب واستشارات متخصّصة للبترول</b> (جيولوجيا وجيوفيزياء)، كورسات classroom وأونلاين، تخدم مصر ودبي وليبيا والسودان وعُمان وأنجولا.</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">التقاط leads / التحويل <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">تسجيل / دفع أونلاين <span class="rt">poor</span><i class="dot w"></i></div>
+        <div class="row">هيكلة كتالوج الكورسات <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">SEO / AEO تدريبي <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">nurture / متابعة <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">المحتوى التعليمي <span class="rt">fair</span><i class="dot m"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: موقع موجّه كواجهة تدريب، لكنه ضعيف في تحويل الزائر إلى مسجَّل، وبلا أتمتة تسجيل أو دفع.</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">كورسات متفرّقة صعبة التصفّح والتسجيل</div><div class="sol">كتالوج كورسات مهيكل + منصّة تسجيل (LMS-lite)</div></div>
+        <div class="m-row"><div class="pain">لا دفع أونلاين</div><div class="sol">تسجيل ودفع مؤتمت + شهادات إتمام</div></div>
+        <div class="m-row"><div class="pain">تسرّب الـ leads بلا متابعة</div><div class="sol">تسلسل بريد nurture + CRM</div></div>
+        <div class="m-row"><div class="pain">غير ظاهر لباحثي التدريب</div><div class="sol">SEO/AEO لصفحات الكورسات والكلمات التدريبية</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>منصّة كورسات + تسجيل ودفع أونلاين.</li>
+        <li>مساعد AI يرشّح الكورس المناسب للمتدرّب.</li>
+        <li>صفحات كورسات محسّنة SEO + شهادات إتمام.</li>
+        <li>تسلسل بريد متابعة (nurture) + CRM.</li>
+        <li>AEO للكلمات التدريبية في القطاع.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">Lead Engine + عناصر منصّة</div></div>
+      <div class="mc"><div class="k">السعر التقديري</div><div class="v"><span class="ltr">~$3.5k–5k</span> + retainer</div></div>
+      <div class="mc"><div class="k">التواصل</div><div class="v"><span class="ltr">stratoil.co.uk</span></div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«التدريب بيتباع أونلاين دلوقت — موقعكم بيعرض الكورسات بس مش بيسجّل ولا بيحصّل دفع، فبتضيّعوا متدربين كل يوم. نبنيلكم منصّة تسجيل ودفع + <b>AI يرشّح الكورس المناسب</b>.»</div>
+  </div>
+</article>
+
+<!-- ========== 07 SHALATEEN ========== -->
+<article class="client reveal" id="c7">
+  <div class="c-head">
+    <span class="rank">07</span>
+    <h2>Shalateen Mineral Resources (SMRC)</h2>
+    <span class="site ltr">smrc.com.eg</span>
+    <div class="c-tags"><span class="t">Gold Mining</span><span class="t">Egypt · شبه حكومي</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>أكبر شركة تعدين ذهب مصرية</b> (7 امتيازات)، شبه حكومية (EMRA + جهات دولة)، نما إنتاجها من 196 إلى 717 كجم، ولديها بوابة مقاولين ومزادات. رئيس مجلس الإدارة: Ashraf El Amir.</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">تصميم / UX البوابة <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">عرض الامتيازات/الإنتاج <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">الشفافية والتقارير <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">محتوى المستثمر (إنجليزي) <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">بوابة الموردين/المقاولين <span class="rt">fair</span><i class="dot m"></i></div>
+        <div class="row">SEO / AEO <span class="rt">weak</span><i class="dot w"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: توجد بوابة مقاولين ومزادات، لكن التصميم والتجربة دون مستوى طموح أكبر شركة ذهب وطنية. <b>تنبيه بيعي:</b> الشراء بالمناقصات (أبطأ ورسمي).</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">بوابة موردين/مقاولين ضعيفة تعيق التسجيل</div><div class="sol">تطوير بوابة تسجيل وتتبّع مناقصات سلسة</div></div>
+        <div class="m-row"><div class="pain">عرض لا يليق بشركة وطنية بهذا الطموح</div><div class="sol">عرض احترافي للامتيازات والإنتاج والخريطة</div></div>
+        <div class="m-row"><div class="pain">حاجة للشفافية وجذب شركاء/مستثمرين</div><div class="sol">لوحة شفافية + تقارير + محتوى إنجليزي للمستثمر</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>تطوير بوابة الموردين/المقاولين (تسجيل · تتبّع · مناقصات).</li>
+        <li>عرض احترافي للامتيازات والإنتاج + خرائط.</li>
+        <li>قسم شفافية / تقارير سنوية + فرص استثمار.</li>
+        <li>محتوى إنجليزي موجّه للمستثمر الأجنبي.</li>
+        <li>SEO/AEO للقطاع.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">مشروع بوابة + موقع (عبر مناقصة)</div></div>
+      <div class="mc"><div class="k">السعر التقديري</div><div class="v">مشروع أكبر — يُسعّر حسب النطاق</div></div>
+      <div class="mc"><div class="k">صاحب القرار / التواصل</div><div class="v">Chairman + إدارة IT/تسويق · <span class="ltr">shalateen@smrc.com.eg</span></div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«بوابة الموردين والمزادات هي واجهتكم للسوق، وتطويرها بيسهّل التوريد ويعكس صورة تليق بأكبر شركة ذهب مصرية — مع محتوى إنجليزي يجذب المستثمر الأجنبي في لحظة طفرة التعدين.» <span style="color:#ffd9a8">(المسار عبر مناقصة رسمية)</span></div>
+  </div>
+</article>
+
+<!-- ========== 08 WADICO ========== -->
+<article class="client reveal" id="c8">
+  <div class="c-head">
+    <span class="rank">08</span>
+    <h2>WadiCo</h2>
+    <span class="site ltr">—</span>
+    <div class="c-tags"><span class="t">Phosphate Mining</span><span class="t">Egypt</span><span class="t">بيانات محدودة</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>تعدين فوسفات وأوجه شيست</b>؛ ضاعفوا احتياطيهم مؤخرًا (إضافة ~5.4 مليون طن) ويتوسّعون في التصنيع. رئيس مجلس الإدارة: Amgad Ghoneim.</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">الحضور الرقمي عمومًا <span class="rt">poor</span><i class="dot w"></i></div>
+        <div class="row">عرض الاحتياطي/الشراكات <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">محتوى المستثمر (إنجليزي) <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">SEO / AEO <span class="rt">weak</span><i class="dot w"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: حضور رقمي شبه غائب في وقت يشهد فيه القطاع طفرة استثمار ضخمة (استثمارات صينية بمليارات + دفع للتصنيع المحلي).</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">قطاع يجذب مليارات وهم غير مرئيين للمستثمر</div><div class="sol">موقع استثماري إنجليزي يبرز الاحتياطي والفرص</div></div>
+        <div class="m-row"><div class="pain">لا عرض للشراكات والقدرات</div><div class="sol">قسم شراكات + data room + تقارير</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>موقع استثماري احترافي ثنائي اللغة.</li>
+        <li>عرض الاحتياطي والامتيازات + خرائط.</li>
+        <li>قسم فرص استثمار / شراكات + data room.</li>
+        <li>محتوى إنجليزي للمستثمر + AEO.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">موقع استثماري (مصري بريميم)</div></div>
+      <div class="mc"><div class="k">صاحب القرار</div><div class="v">Chairman — Amgad Ghoneim</div></div>
+      <div class="mc"><div class="k">التواصل</div><div class="v">هيئة الثروة المعدنية / LinkedIn (يُراجَع)</div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«القطاع بتاعكم بيجذب مليارات دلوقت (استثمار صيني بمليارات + دفع للتصنيع المحلي) — ومن غير حضور رقمي إنجليزي، إنتم <b>غير مرئيين للمستثمر الأجنبي</b> في أهم لحظة. نبنيلكم الواجهة اللي بتجذبه.»</div>
+
+    <div class="note">بيانات الشركة العامة محدودة — يُفضّل تأكيد النطاق وبيانات التواصل عبر مدخل دافئ من مهندسي التعدين لديك.</div>
+  </div>
+</article>
+
+<!-- ========== 09 MULTIMIN ========== -->
+<article class="client reveal" id="c9">
+  <div class="c-head">
+    <span class="rank">09</span>
+    <h2>Multimin Egypt</h2>
+    <span class="site ltr">—</span>
+    <div class="c-tags"><span class="t">Minerals / Raw Materials</span><span class="t">Egypt</span><span class="t">بيانات محدودة</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>شركة تعدين مصرية</b> تبيع خامات ومواد أولية بجودات متنوّعة.</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">الحضور الرقمي عمومًا <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">كتالوج الخامات <span class="rt">poor</span><i class="dot w"></i></div>
+        <div class="row">قناة استفسار/تسعير <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">محتوى تصديري (إنجليزي) <span class="rt">weak</span><i class="dot w"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: حضور رقمي محدود بلا عرض منتجات/مواصفات ولا قناة استفسار احترافية — ما يحدّ من الوصول للعملاء الدوليين.</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">الخامات تُباع دوليًا بالمواصفات وهي غير معروضة</div><div class="sol">كتالوج خامات بالمواصفات والجودات + صفحات منتجات</div></div>
+        <div class="m-row"><div class="pain">لا قناة استفسار للمشتري الدولي</div><div class="sol">نظام استفسار/تسعير + محتوى تصديري إنجليزي</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>كتالوج خامات بالمواصفات + شهادات الجودة.</li>
+        <li>نظام استفسار/تسعير (RFQ).</li>
+        <li>محتوى تصديري إنجليزي + AEO.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">Lead Engine (مصري)</div></div>
+      <div class="mc"><div class="k">السعر التقديري</div><div class="v"><span class="ltr">~$3k</span> + retainer</div></div>
+      <div class="mc"><div class="k">التواصل</div><div class="v">إحالة دافئة عبر مهندسي التعدين (يُراجَع)</div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«الخامات بتتباع دوليًا بالمواصفات — من غير كتالوج إنجليزي وقناة استفسار، بتضيّعوا عملاء تصدير. نبنيلكم الواجهة اللي بتفتح لكم السوق الدولي.»</div>
+
+    <div class="note">بيانات الشركة العامة قليلة — الأفضل تأكيد النطاق والتواصل عبر مدخل دافئ قبل العرض.</div>
+  </div>
+</article>
+
+<!-- ========== 10 OLFELD ========== -->
+<article class="client reveal" id="c10">
+  <div class="c-head">
+    <span class="rank">10</span>
+    <h2>OLFELD (Omega International)</h2>
+    <span class="site ltr">olfeld.com</span>
+    <div class="c-tags"><span class="t">Procurement / Supply</span><span class="t">UAE · KSA · Oman</span><span class="t pri">مدخل خليجي</span></div>
+  </div>
+  <div class="c-body">
+    <p class="snap"><b>توريد ومشتريات صناعية وبترولية</b> (procurement powerhouse)، ذراع Omega International، مقرّها الإمارات، ~20 سنة خبرة، شبكة عالمية (UK/USA/Europe/Asia/Africa)، وتتحدّث صراحةً عن «digital transformation».</p>
+
+    <div class="block">
+      <div class="lbl">الأوديت الرقمي</div>
+      <div class="score">
+        <div class="row">بوابة مشتريات ذكية <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">RFQ / أتمتة <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">كتالوج المنتجات <span class="rt">fair</span><i class="dot m"></i></div>
+        <div class="row">تمييز رقمي حقيقي <span class="rt">weak</span><i class="dot w"></i></div>
+        <div class="row">SEO / AEO <span class="rt">fair</span><i class="dot m"></i></div>
+        <div class="row">الجاهزية الذهنية للرسالة <span class="rt">good</span><i class="dot g"></i></div>
+      </div>
+      <div class="note">الملاحظة الجوهرية: موقع procurement عادي، لكنهم <b>يتحدّثون بأنفسهم عن التحوّل الرقمي</b> — أي مهيَّؤون للرسالة ويحتاجون من ينقل الشعار إلى واقع.</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الوجع ← الحل</div>
+      <div class="map">
+        <div class="m-row m-head"><div>نقطة الألم</div><div>كيف نعالجها</div></div>
+        <div class="m-row"><div class="pain">كلام عن digital transformation بلا تطبيق</div><div class="sol">بوابة مشتريات/RFQ ذكية تنقل الشعار لواقع</div></div>
+        <div class="m-row"><div class="pain">procurement يدوي وبطيء</div><div class="sol">أتمتة RFQ + تتبّع طلبات + AI assistant للمواصفات</div></div>
+        <div class="m-row"><div class="pain">منافسة موردين بلوجستيات رقمية أسرع</div><div class="sol">تمييز رقمي + تجربة عميل احترافية</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="lbl">الفيتشرز المقترحة</div>
+      <ul class="clean feat">
+        <li>بوابة مشتريات / RFQ ذكية + تتبّع طلبات.</li>
+        <li>كتالوج منتجات + AI assistant للمواصفات.</li>
+        <li>تكامل مع الموردين/الأنظمة.</li>
+        <li>هوية ومحتوى إنجليزي احترافي + AEO.</li>
+      </ul>
+    </div>
+
+    <div class="meta-grid">
+      <div class="mc"><div class="k">الباقة المقترحة</div><div class="v">Growth (دولي/خليجي بريميم)</div></div>
+      <div class="mc"><div class="k">السعر التقديري</div><div class="v"><span class="ltr">~$8k–15k</span> + retainer</div></div>
+      <div class="mc"><div class="k">التواصل</div><div class="v"><span class="ltr">olfeld.com</span> · المدير التجاري/التسويق</div></div>
+    </div>
+
+    <div class="pitch"><span class="k">زاوية الـ Pitch</span>«إنتم بتتكلموا عن <b>digital transformation</b> — إحنا بننفّذها فعلاً: بوابة RFQ ذكية + <b>AI يرد على المواصفات</b> ويتابع الطلبات. نحوّل الشعار لتجربة تميّزكم عن أي مورّد تاني في الخليج.»</div>
+  </div>
+</article>
+
+<!-- ===== toolkit ===== -->
+<section class="toolkit reveal" id="toolkit">
+  <div class="eyebrow">Feature Toolkit</div>
+  <h3>صندوق الفيتشرز الموحّد</h3>
+  <p class="sub">المكوّنات القياسية التي نركّبها حسب حاجة كل عميل — تُبنى مرّة وتُعاد بكفاءة.</p>
+  <div class="tk-grid">
+    <div class="tk"><span class="i">RFQ</span><div><b>AI RFQ Assistant</b> — يستقبل المواصفات، يرشّح المنتج، ويجمّع طلب تسعير مهيكل للـ CRM.</div></div>
+    <div class="tk"><span class="i">DOC</span><div><b>مساعد ذكي على المستندات</b> — مدرَّب على الكتالوجات والـ specs للرد على الأسئلة الفنية.</div></div>
+    <div class="tk"><span class="i">CAT</span><div><b>كتالوج مفلتر</b> + تنزيل datasheets / spec sheets.</div></div>
+    <div class="tk"><span class="i">AEO</span><div><b>ظهور في الـ AI</b> (ChatGPT/Perplexity) + schema markup + SEO تقني.</div></div>
+    <div class="tk"><span class="i">HSE</span><div><b>قسم الشهادات والاعتمادات و HSE</b> كأداة بيع (ISO · IRATA · API · ABS).</div></div>
+    <div class="tk"><span class="i">RTL</span><div><b>موقع ثنائي اللغة</b> عربي/إنجليزي بـ RTL سليم لكل سوق.</div></div>
+    <div class="tk"><span class="i">POR</span><div><b>بوابة عملاء/موردين</b> — تسجيل، تتبّع طلبات، مناقصات، شهادات.</div></div>
+    <div class="tk"><span class="i">SYS</span><div><b>تكامل CRM / ERP</b> + server-side tracking + تحليلات.</div></div>
+  </div>
+</section>
+
+<!-- ===== close ===== -->
+<div class="close reveal">
+  <h3>الخطوة التالية</h3>
+  <p>ابدأ بأقوى ثلاثة مداخل فورية: <b>Truco</b> (علاقة + حاجة) · <b>Delta/DIPS</b> (موقع فيه Lorem ipsum — مكشوف) · <b>DeepTech</b> (موقع بـ Flash + عقود BP).</p>
+  <p>لكل واحد: نبني رسالة outreach قصيرة مبنية على نقطة ضعف موقعه، ونرفقها بـ mini-audit بصري يوري الفرق «قبل/بعد».</p>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap">مؤشّرات الأوديت استرشادية تُؤكَّد بفحص مباشر · بيانات التواصل من أدلة عامة تُراجَع قبل الإرسال · الأسعار تقديرية للتخطيط.</div>
+</footer>
+
+<script>
+  (function(){
+    var els=document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){els.forEach(function(e){e.classList.add('in')});return;}
+    var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}})},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+    els.forEach(function(e){io.observe(e)});
+  })();
+</script>
+</body>
+</html>
