@@ -27,6 +27,7 @@ cd wordpress
 | SQLite Database Integration | 3.0.2 | `github.com/WordPress/sqlite-database-integration` |
 | Elementor | 3.35.9 | `github.com/elementor/elementor` (مبني من السورس) |
 | Hello Elementor | 3.5.1 | `github.com/elementor/hello-theme` (مبني من السورس) |
+| Envato Market | 2.0.14 | `github.com/envato/wp-envato-market` |
 
 ## ليه من GitHub ومش من wordpress.org؟
 
@@ -35,6 +36,7 @@ cd wordpress
 - `wordpress.org` و `downloads.wordpress.org` و `api.wordpress.org`
 - `composer.elementor.com`
 - `assets.elementor.com` و `api.elementor.com` و `my.elementor.com`
+- `envato.com` و `api.envato.com` و `elements.envato.com`
 
 عشان كده كل حاجة بتتجاب من GitHub وبتتبني محليًا بـ npm. النتيجة موقع
 كامل شغّال، مع استثناءين:
@@ -62,7 +64,8 @@ cd wordpress
 | `bin/activate.php` | يفعّل الإضافات والثيم ويظبط الروابط الدائمة |
 | `bin/kit-setup.php` | يبني كيت "Client Dossier" (ألوان وخطوط عامة + إعدادات تخطيط) |
 | `bin/kit-export.php` | يصدّر الكيت الحالي كملف `.zip` |
-| `bin/kit-import.php` | يستورد أي كيت `.zip` (`php bin/kit-import.php kit.zip`) |
+| `bin/kit-import.php` | يستورد كيت إليمنتور `.zip` |
+| `bin/template-import.php` | يستورد أي حزمة قوالب `.zip` — كيت إليمنتور أو Envato Template Kit |
 
 سكريبتات الـ PHP اللي محتاجة صلاحيات أدمن بتتشغّل بـ `WP_USER_ID=1` قدامها.
 
@@ -78,6 +81,28 @@ cd wordpress
 Muted `#5C645F` · Line `#DCD9D0` · Success `#2F6B4F` · Danger `#A63A2C`
 
 **الخطوط:** IBM Plex Sans Arabic (عناوين ونصوص) · IBM Plex Mono (تسميات)
+
+## Envato
+
+في البيئة دي `envato.com` و `api.envato.com` و `elements.envato.com` كلهم
+محجوبين، وإضافة **Template Kit Import** الرسمية موجودة على `wordpress.org` بس
+(محجوب كمان) ومش متاحة على GitHub. يعني:
+
+- إضافة **Envato Market** (`github.com/envato/wp-envato-market`) متركّبة ومفعّلة،
+  بس مش هتقدر تجيب حاجة من إينفاتو من جوه الكونتينر ده — محتاجة توكن و`api.envato.com`.
+  هتشتغل عادي لما ترفع الموقع على سيرفر عنده إنترنت.
+- **استيراد Template Kit من ملف محلي شغال دلوقتي** عن طريق `bin/template-import.php`.
+  السكريبت بيميّز نوع الملف: لو كيت إليمنتور بيعدّيه على Import/Export API،
+  ولو حزمة قوالب (زي Envato Template Kit) بياخد كل ملفات JSON اللي جواه
+  ويستوردها في Templates → Saved Templates، ويتجاهل أي ملف مش قالب زي `manifest.json`.
+
+```bash
+WP_USER_ID=1 php bin/template-import.php ~/Downloads/some-template-kit.zip
+```
+
+> استيراد أي JSON في إليمنتور محتاج **Enable Unfiltered File Uploads** مفتوحة —
+> `bin/activate.php` بيفتحها. خليك واخد بالك إنها بتسمح كمان برفع ملفات SVG،
+> فمتسبهاش مفتوحة على موقع عام من غير داعي.
 
 ## mu-plugins
 

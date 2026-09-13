@@ -76,6 +76,16 @@ rm -rf "$PLUGIN/.git"
 # guards its vendor/autoload.php with file_exists(), and the only code that needs
 # the scoped Twig copy sits behind the (inactive) e_atomic_elements experiment.
 
+step "Envato Market plugin"
+# The Envato "Template Kit Import" plugin only ships on wordpress.org, which is
+# blocked here. This is the official Envato plugin that does have a public
+# source. It needs api.envato.com (also blocked in this container) to fetch
+# anything, so here it installs and runs but cannot reach Envato — use
+# bin/template-import.php for Template Kit zips instead.
+ENVATO="$SITE/wp-content/plugins/envato-market"
+git clone --depth 1 https://github.com/envato/wp-envato-market.git "$ENVATO"
+rm -rf "$ENVATO/.git"
+
 step "wp-config.php"
 SALTS=$(php -r '$c="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_[]{}<>~`+=,.;:/?|";
 foreach(["AUTH_KEY","SECURE_AUTH_KEY","LOGGED_IN_KEY","NONCE_KEY","AUTH_SALT","SECURE_AUTH_SALT","LOGGED_IN_SALT","NONCE_SALT"] as $k){$v="";for($i=0;$i<64;$i++){$v.=$c[random_int(0,strlen($c)-1)];}printf("define( %s, %s );\n", var_export($k,true), var_export($v,true));}')
